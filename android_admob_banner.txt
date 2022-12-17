@@ -1,0 +1,152 @@
+Step #1
+  in terminal,
+  sudo flutter pub add google_mobile_ads
+  if it is already exist
+  sudo flutter upgrade google_mobile_ads
+  sudo flutter outdated
+  
+  then
+  these command automatically update below
+  
+  dependencies:
+  flutter:
+    sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  google_mobile_ads: ^2.3.0
+  
+  in pubspec.yaml file
+  
+  then
+  
+  install java runtime environment if you don't have it
+  
+Step #2
+  these codes are the code snipet I entered to main.dart
+  
+  import 'package:google_mobile_ads/google_mobile_ads.dart'; //for ad
+
+
+
+import 'package:flutter/material.dart';
+import 'dart:io' show Platform; //for data/ad_helper.dart
+import 'data/ad_helper.dart'; //sub files import
+void main() {
+
+  WidgetsFlutterBinding.ensureInitialized();//for ad
+  MobileAds.instance.initialize(); //for ad
+  
+
+  runApp(MyApp());
+}
+
+
+
+
+
+
+class _MyHomePageState extends State<MyHomePage> {
+  //late BannerAd _bottomBannerAd;
+  BannerAd _bottomBannerAd;
+  bool _isBottomBannerAdLoaded = false;
+
+  void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    );
+    _bottomBannerAd.load();
+  }
+
+
+
+
+
+  @override
+void initState() {
+  super.initState();
+  _createBottomBannerAd();
+}
+@override
+void dispose() {
+  super.dispose();
+  _bottomBannerAd.dispose();
+}
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+
+      bottomNavigationBar: _isBottomBannerAdLoaded
+          ? Container(
+              height: _bottomBannerAd.size.height.toDouble(),
+              width: _bottomBannerAd.size.width.toDouble(),
+              child: AdWidget(ad: _bottomBannerAd),
+            )
+          : null,
+    
+    
+    
+    
+Step #3
+make subfolder named 'data' in lib folder
+make a dart file named 'ad_helper.dart'
+do not use my banner ID. this is mine. make your own banner ID.
+
+
+
+import 'dart:io' show Platform; // for Platform check
+
+class AdHelper {
+  static String get bannerAdUnitId {
+    if (Platform.isAndroid) {
+      return "ca-app-pub-8829722017569358/2027278441";
+    } else if (Platform.isIOS) {
+      return "ca-app-pub-8829722017569358/2027278441"; //need to have saparete id for IOS
+    } else {
+      throw new UnsupportedError("Unsupported platform");
+    }
+  }
+
+//next type
+
+
+}
+
+
+
+Step #4
+go to android/app and add this code
+
+dependencies {
+    
+    implementation 'com.google.android.gms:play-services-ads:21.4.0'
+}
+
+Step #5
+go to android/app/src/main and add this code
+do not use my app id. make your own app id from your own admob account
+
+<meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8829722017569358~1424643213"/>
